@@ -3,7 +3,7 @@ import arithm_pkg::*;
 
 module sync_fifo
 #(
-    parameter DATA_WIDTH = 8,
+    parameter DATA_WIDTH = 32,
     parameter DEPTH = 16
 )
 (
