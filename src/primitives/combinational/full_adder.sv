@@ -1,11 +1,11 @@
 module full_adder
 (
-    input wire a_i;
-    input wire b_i;
-    input wire c_i;
-    output wire s_o;
-    output wire c_o;
-)
+    input wire a_i,
+    input wire b_i,
+    input wire c_i,
+    output wire s_o,
+    output wire c_o
+);
     wire w1, w2, w3, w4, w5;
     and G1(w1, a_i, c_i);
     and G2(w2, b_i, c_i);

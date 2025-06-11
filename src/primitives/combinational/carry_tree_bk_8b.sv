@@ -1,8 +1,8 @@
 module carry_tree_bk_8b
 (
-    input wire [7:0] prop_i;
-    input wire [7:0] gen_i;
-    output wire [7:0] carry_o;
+    input wire [7:0] prop_i,
+    input wire [7:0] gen_i,
+    output wire [7:0] carry_o
 );
     wire [7:0] gen_to_0;
     assign gen_to_0[0] = gen_i[0];

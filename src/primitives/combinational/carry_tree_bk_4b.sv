@@ -1,9 +1,9 @@
 module carry_tree_bk_4b
 (
-    input wire [3:0] prop_i;
-    input wire [3:0] gen_i;
-    output wire [3:0] carry_o;
-)
+    input wire [3:0] prop_i,
+    input wire [3:0] gen_i,
+    output wire [3:0] carry_o
+);
     wire gen_1_0, gen_2_0, gen_3_2, gen_3_0;
     wire prop_3_2;
 

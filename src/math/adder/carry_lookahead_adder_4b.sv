@@ -1,33 +1,32 @@
-module carry_lookahead_adder_4b
-(
-    input wire [3:0] operand1_i;
-    input wire [3:0] operand2_i;
-    input wire carry_i;
+module carry_lookahead_adder_4b (
+    input  wire [3:0] a,     // Operand A
+    input  wire [3:0] b,     // Operand B
+    input  wire       cin,   // Carry-in
+    output wire [3:0] sum,   // Sum output
+    output wire       cout   // Carry-out
+);
 
-    output wire [3:0] sum_o;
-    output wire carry_o;
-)
+    // Generate and propagate
+    wire [3:0] g;  // generate = a & b
+    wire [3:0] p;  // propagate = a ^ b
+    wire [4:0] c;  // internal carry wires
 
-    wire [3:0] generator_w;
-    wire [3:0] partial_sum_w;
-    wire [2:0] carry_intermediate;
+    assign g = a & b;
+    assign p = a ^ b;
 
-    genvar i;
-    generate
-        for(i = 0; i < 4; i = i + 1) begin : generator_partial_block
-            and G1(generator_w[i], operand1_i[i], operand2_i[i]);
-            xor G2(partial_sum_w[i], operand1_i[i], operand2_i[i]);
-        end
-    endgenerate
+    // Carry lookahead logic
+    assign c[0] = cin;
 
-    assign carry_intermediate[0] = generator_w[0] | (partial_sum_w[0] & carry_i);
-    assign carry_intermediate[1] = generator_w[1] | (partial_sum_w[1] & (generator_w[0] | (partial_sum_w[0] & carry_i)));
-    assign carry_intermediate[2] = generator_w[2] | (partial_sum_w[2] & (generator_w[1] | (partial_sum_w[1] & (generator_w[0] | (partial_sum_w[0] & carry_i)))));
-    assign carry_o = generator_w[3] | (partial_sum_w[3] & ( generator_w[2] | (partial_sum_w[2] & (generator_w[1] | (partial_sum_w[1] & (generator_w[0] | (partial_sum_w[0] & carry_i)))))));
+    assign c[1] = g[0] | (p[0] & c[0]);
+    assign c[2] = g[1] | (p[1] & g[0]) | (p[1] & p[0] & c[0]);
+    assign c[3] = g[2] | (p[2] & g[1]) | (p[2] & p[1] & g[0]) | 
+                            (p[2] & p[1] & p[0] & c[0]);
+    assign c[4] = g[3] | (p[3] & g[2]) | (p[3] & p[2] & g[1]) | 
+                            (p[3] & p[2] & p[1] & g[0]) |
+                            (p[3] & p[2] & p[1] & p[0] & c[0]);
 
-    generate
-        for(i = 0; i < 4; i = i + 1) begin : sum_block
-            assign sum_o[i] = operand1_i[i] ^ operand2_i[i] ^ carry_intermediate[i];
-        end
-    endgenerate
+    // Final sum and carry out
+    assign sum  = p ^ c[3:0];
+    assign cout = c[4];
+
 endmodule

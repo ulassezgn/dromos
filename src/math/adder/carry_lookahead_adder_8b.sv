@@ -1,37 +1,58 @@
 module carry_lookahead_adder_8b
 (
-    input wire [7:0] operand1_i;
-    input wire [7:0] operand2_i;
-    input wire carry_i;
+    input wire [7:0] a,
+    input wire [7:0] b,
+    input wire       cin,
 
-    output wire [7:0] sum_o;
-    output wire carry_o;
+    output wire [7:0] sum;
+    output wire cout;
 )
-    wire [7:0] generator_w;
-    wire [7:0] partial_sum_w;
-    wire [6:0] carry_intermediate;
+    wire [7:0] g;
+    wire [7:0] p;
+    wire [8:0] c;
 
-    genvar i;
-    generate
-        for(i = 0; i < 8; i = i + 1) begin : generator_partial_block
-            and G1(generator_w[i], operand1_i[i], operand2_i[i]);
-            xor G2(partial_sum_w[i], operand1_i[i], operand2_i[i]);
-        end
-    endgenerate
+    assign g = a & b;
+    assign p = a ^ b;
+   
+    assign c[0] = cin;
 
-    assign carry_intermediate[0] = generator_w[0] | (partial_sum_w[0] & carry_i);
-    assign carry_intermediate[1] = generator_w[1] | (partial_sum_w[1] & (generator_w[0] | (partial_sum_w[0] & carry_i)));
-    assign carry_intermediate[2] = generator_w[2] | (partial_sum_w[2] & (generator_w[1] | (partial_sum_w[1] & (generator_w[0] | (partial_sum_w[0] & carry_i)))));
-    assign carry_intermediate[3] = generator_w[3] | (partial_sum_w[3] & (generator_w[2] | (partial_sum_w[2] & (generator_w[1] | (partial_sum_w[1] & (generator_w[0] | (partial_sum_w[0] & carry_i)))))));
-    assign carry_intermediate[4] = generator_w[4] | (partial_sum_w[4] & (generator_w[3] | (partial_sum_w[3] & (generator_w[2] | (partial_sum_w[2] & (generator_w[1] | (partial_sum_w[1] & (generator_w[0] | (partial_sum_w[0] & carry_i)))))))));
-    assign carry_intermediate[5] = generator_w[5] | (partial_sum_w[5] & (generator_w[4] | (partial_sum_w[4] & (generator_w[3] | (partial_sum_w[3] & (generator_w[2] | (partial_sum_w[2] & (generator_w[1] | (partial_sum_w[1] & (generator_w[0] | (partial_sum_w[0] & carry_i)))))))))));
-    assign carry_intermediate[6] = generator_w[6] | (partial_sum_w[6] & (generator_w[5] | (partial_sum_w[5] & (generator_w[4] | (partial_sum_w[4] & (generator_w[3] | (partial_sum_w[3] & (generator_w[2] | (partial_sum_w[2] & (generator_w[1] | (partial_sum_w[1] & (generator_w[0] | (partial_sum_w[0] & carry_i)))))))))))));
-    assign carry_o = generator_w[7] | (partial_sum_w[7] & (generator_w[6] | (partial_sum_w[6] & (generator_w[5] | (partial_sum_w[5] & (generator_w[4] | (partial_sum_w[4] & (generator_w[3] | (partial_sum_w[3] & (generator_w[2] | (partial_sum_w[2] & (generator_w[1] | (partial_sum_w[1] & (generator_w[0] | (partial_sum_w[0] & carry_i)))))))))))))));
+    assign c[1] = g[0] | (p[0] & c[0]);
 
-    assign sum_o[0] = operand1_i[0] ^ operand2_i[0] ^ carry_i;
-    generate
-        for(i = 1; i < 8; i = i + 1) begin : sum_block
-            assign sum_o[i] = operand1_i[i] ^ operand2_i[i] ^ carry_intermediate[i-1];
-        end
-    endgenerate
+    assign c[2] = g[1] | (p[1] & g[0]) | (p[1] & p[0] & c[0]);
+
+    assign c[3] = g[2] | (p[2] & g[1]) | (p[2] & p[1] & g[0]) | 
+                 (p[2] & p[1] & p[0] & c[0]);
+
+    assign c[4] = g[3] | (p[3] & g[2]) | (p[3] & p[2] & g[1]) | 
+                 (p[3] & p[2] & p[1] & g[0]) |
+                 (p[3] & p[2] & p[1] & p[0] & c[0]);
+
+    assign c[5] = g[4] | (p[4] & g[3]) | (p[4] & p[3] & g[2]) |
+                 (p[4] & p[3] & p[2] & g[1]) | 
+                 (p[4] & p[3] & p[2] & p[1] & g[0]) |
+                 (p[4] & p[3] & p[2] & p[1] & p[0] & c[0]);
+    
+    assign c[6] = g[5] | (p[5] & g[4]) | (p[5] & p[4] & g[3]) |
+                 (p[5] & p[4] & p[3] & g[2]) |
+                 (p[5] & p[4] & p[3] & p[2] & g[1]) | 
+                 (p[5] & p[4] & p[3] & p[2] & p[1] & g[0]) |
+                 (p[5] & p[4] & p[3] & p[2] & p[1] & p[0] & c[0]);
+
+    assign c[7] = g[6] | (p[6] & g[5]) | (p[6] & p[5] & g[4]) |
+                 (p[6] & p[5] & p[4] & g[3]) |
+                 (p[6] & p[5] & p[4] & p[3] & g[2]) |
+                 (p[6] & p[5] & p[4] & p[3] & p[2] & g[1]) | 
+                 (p[6] & p[5] & p[4] & p[3] & p[2] & p[1] & g[0]) |
+                 (p[6] & p[5] & p[4] & p[3] & p[2] & p[1] & p[0] & c[0]);
+
+    assign c[8] = g[7] | (p[7] & g[6]) | (p[7] & p[6] & g[5]) |
+                 (p[7] & p[6] & p[5] & g[4]) |
+                 (p[7] & p[6] & p[5] & p[4] & g[3]) |
+                 (p[7] & p[6] & p[5] & p[4] & p[3] & g[2]) |
+                 (p[7] & p[6] & p[5] & p[4] & p[3] & p[2] & g[1]) | 
+                 (p[7] & p[6] & p[5] & p[4] & p[3] & p[2] & p[1] & g[0]) |
+                 (p[7] & p[6] & p[5] & p[4] & p[3] & p[2] & p[1] & p[0] & c[0]);
+
+    assign sum = p ^ c[7:0];
+    assign cout = c[8];
 endmodule

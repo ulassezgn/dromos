@@ -1,12 +1,12 @@
 module pre_processing_16b
 (
-    input wire [15:0] operand1_i;
-    input wire [15:0] operand2_i;
-    input wire carry_i;
+    input wire [15:0] operand1_i,
+    input wire [15:0] operand2_i,
+    input wire carry_i,
     
-    output wire [16:0] prop_o;
-    output wire [16:0] gen_o;
-)
+    output wire [16:0] prop_o,
+    output wire [16:0] gen_o
+);
     assign prop_o = 1'b0;
     assign gen_o[0] = carry_i;
 
