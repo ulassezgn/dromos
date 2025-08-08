@@ -33,7 +33,7 @@ module async_fifo
     reg [ADDR_WIDTH-1:0] rd_ptr_gray_sync1_wr, rd_ptr_gray_sync2_wr;
     reg [ADDR_WIDTH-1:0] wr_ptr_gray_sync1_rd, wr_ptr_gray_sync2_rd;
 
-    logic [DATA_WIDTH-1:0] mem [0:DEPTH-1];
+    reg [DATA_WIDTH-1:0] mem [0:DEPTH-1];
     counter_param #(ADDR_WIDTH) wr_ptr_cnt_bin(wr_clk_i, wr_rstn_i, inc_wr_ptr_bin, wr_ptr_bin);
     counter_param #(ADDR_WIDTH) rd_ptr_cnt_bin(rd_clk_i, rd_rstn_i, inc_rd_ptr_bin, rd_ptr_bin);
     

@@ -6,7 +6,7 @@ package arithm_pkg;
         if (value <= 1) return 0;
         value = value - 1;
         for (i = 0; value > 0; i++)
-        value = value >> 1;
+            value = value >> 1;
         return i;
     end
     endfunction
