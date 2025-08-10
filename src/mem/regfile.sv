@@ -27,7 +27,7 @@ module regfile #(
         if(!rstn_i) begin
             integer i;
             for(i = 0; i < 32; i = i + 1) regs[i] <= '0;
-        end else if (we_i && (waddr_i = 5'd0)) begin
+        end else if (we_i && (waddr_i != 5'd0)) begin
             regs[waddr_i] <= wdata_i;
         end
     end
